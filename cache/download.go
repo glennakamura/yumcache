@@ -4,6 +4,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httputil"
+	"os"
 	"time"
 )
 
@@ -25,7 +26,11 @@ func (d *download) Close() error {
 	d.output.Close()
 	close(d.eof)
 	delete(downloads, d.path)
-	return nil
+	mtime, err := http.ParseTime(d.header.Get("Last-Modified"))
+	if err == nil {
+		err = os.Chtimes(d.path, mtime, mtime)
+	}
+	return err
 }
 
 func downloadHandler(path string) http.Handler {

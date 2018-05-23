@@ -9,18 +9,18 @@ import (
 var downloads = make(map[string]*download)
 var mutex sync.Mutex
 
-func Lookup(req *http.Request) Item {
+func Lookup(req *http.Request) http.Handler {
 	path := localPath(req)
 	mutex.Lock()
 	defer mutex.Unlock()
 	if dl, ok := downloads[path]; ok {
-		return newClone(path, dl)
+		return concurrentHandler(path, dl)
 	}
 	if stat, err := os.Stat(path); err == nil && !stat.IsDir() {
-		return newFile(path)
+		return fileHandler(path)
 	}
 	if path[len(path)-4:] == ".rpm" {
-		return newDownload(path, req)
+		return downloadHandler(path)
 	}
-	return newProxy(req)
+	return proxyHandler
 }

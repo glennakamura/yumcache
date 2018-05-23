@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io"
 	"log"
 	"net/http"
 	"yumcache/cache"
@@ -9,14 +8,7 @@ import (
 
 func handler(w http.ResponseWriter, req *http.Request) {
 	log.Println(req.Method + " " + req.RequestURI)
-	if item := cache.Lookup(req); item != nil {
-		if item.Header() == nil {
-			http.ServeFile(w, req, item.Path())
-			return
-		}
-		io.Copy(io.Writer(w), item)
-		item.Close()
-	}
+	cache.Lookup(req).ServeHTTP(w, req)
 }
 
 func main() {

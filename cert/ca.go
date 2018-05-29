@@ -50,7 +50,7 @@ func generateCA(name string) (CA, error) {
 	return CA{}, err
 }
 
-func LoadCA(certFile, keyFile string) (CA, error) {
+func LoadCA(certFile, keyFile, name string) (CA, error) {
 	if tlsCert, err := tls.LoadX509KeyPair(certFile, keyFile); err == nil {
 		if key, ok := tlsCert.PrivateKey.(*ecdsa.PrivateKey); ok {
 			tlsCert.PrivateKey = Key{PrivateKey: key}
@@ -60,7 +60,7 @@ func LoadCA(certFile, keyFile string) (CA, error) {
 			return CA{Certificate: (*Certificate)(&tlsCert)}, err
 		}
 	}
-	ca, err := generateCA("YUM Cache CA")
+	ca, err := generateCA(name)
 	if err == nil {
 		err = ca.WritePEMFiles(certFile, keyFile)
 		return ca, err

@@ -17,7 +17,7 @@ var mirrors = map[string]*regexp.Regexp{
 }
 
 func localPath(req *http.Request) string {
-	url := path.Join(req.Host, path.Clean(req.URL.Path))
+	url := path.Join(req.URL.Host, path.Clean(req.URL.Path))
 	for dist, re := range mirrors {
 		if match := re.FindStringSubmatch(url); match != nil {
 			return path.Join(config.DocumentRoot, dist, match[1])

@@ -24,7 +24,7 @@ type CA struct {
 	*Certificate
 }
 
-func (c CA) GenerateCert(names []string) (*Certificate, error) {
+func (c CA) GenerateCert(names ...string) (*Certificate, error) {
 	return generateCert(c.Certificate, names)
 }
 
